@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+export PYBUILD_NAME=pyqtgraph
+PACKAGE_ROOT_DIR = $(CURDIR)/debian/${PACKAGE_NAME}
+
+PYVERS = $(shell pyversions -vr)
+PYVER = $(shell pyversions  -vd)
+
+export HOME=$(CURDIR)/build
+
+# Mega rule
+%:
+	dh $@ --buildsystem python_distutils
+
+override_dh_clean:
+ifeq (,$(filter noclean,$(DEB_BUILD_OPTIONS)))
+        rm -rf build doc/build
+        dh_clean
+endif
+
+
+# Build docs during install
+override_dh_auto_install: 
+	${PYVERS:%=python-install%}
+
+python-install%:
+	python$* setup.py install --install-layout=deb --root=$(PACKAGE_ROOT_DIR)
+	export PYTHONPATH=$(PACKAGE_ROOT_DIR)/usr/lib/python$*/dist-packages; cd doc; test -d build/html || $(MAKE) html
+	python$* setup.py install --install-layout=deb --root=$(PACKAGE_ROOT_DIR)
+
+## immediately useable documentation and exemplar scripts/data
+override_dh_compress:
+	dh_compress -X.py -X.html -X.pdf -X.css -X.jpg -X.txt -X.js -X.json -X.rtc
+
+override_dh_installdocs:
+	dh_installdocs -A CONTRIBUTORS.txt README.md DEVELOPMENT.txt TASKS.txt

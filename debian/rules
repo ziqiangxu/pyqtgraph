@@ -14,8 +14,8 @@ export HOME=$(CURDIR)/build
 
 override_dh_clean:
 ifeq (,$(filter noclean,$(DEB_BUILD_OPTIONS)))
-        rm -rf build doc/build
-        dh_clean
+	rm -rf build doc/build
+	dh_clean
 endif
 
 

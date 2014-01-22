@@ -1,8 +1,8 @@
-Document: PyQtGraph
+Document: pyqtgraph
 Title: PyQtGraph Developer Manual
 Author: Luke Campagnola
 Abstract: This manual describes the API of
- the PyQtGraph python package.
+ the PyQtGraph Python package.
 Section: Science/Data Analysis
 
 Format: HTML

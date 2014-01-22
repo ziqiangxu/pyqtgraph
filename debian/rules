@@ -1,36 +1,49 @@
 #!/usr/bin/make -f
-#export DH_VERBOSE=1
-export PYBUILD_NAME=pyqtgraph
-PACKAGE_ROOT_DIR = $(CURDIR)/debian/${PACKAGE_NAME}
+#DH_VERBOSE=1
 
-PYVERS = $(shell pyversions -vr)
-PYVER = $(shell pyversions  -vd)
+PYTHON2_VERSIONS=$(shell pyversions -vr)
+PYTHON3_VERSIONS=$(shell py3versions -vr)
+PYTHON_VERSIONS=${PYTHON2_VERSIONS} ${PYTHON3_VERSIONS}
 
-export HOME=$(CURDIR)/build
+# Prevent setuptools/distribute from accessing the internet.
+export http_proxy = http://127.0.0.1:9
 
-# Mega rule
 %:
-	dh $@ --buildsystem python_distutils
+	dh $@ --with python2,python3,sphinxdoc
 
-override_dh_clean:
-ifeq (,$(filter noclean,$(DEB_BUILD_OPTIONS)))
-	rm -rf build doc/build
-	dh_clean
-endif
+# # Testing:
+# ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+# test-python%:
+# 	python$* setup.py test -vv
+# 
+# override_dh_auto_test: $(foreach pyversion,${PYTHON_VERSIONS},$(pyversion:%=test-python%))
+# endif
 
+build-python%:
+	python$* setup.py build
 
-# Build docs during install
-override_dh_auto_install: 
-	${PYVERS:%=python-install%}
+override_dh_auto_build: $(PYTHON3:%=build-python%)
+	dh_auto_build
 
-python-install%:
-	python$* setup.py install --install-layout=deb --root=$(PACKAGE_ROOT_DIR)
-	export PYTHONPATH=$(PACKAGE_ROOT_DIR)/usr/lib/python$*/dist-packages; cd doc; test -d build/html || $(MAKE) html
-	python$* setup.py install --install-layout=deb --root=$(PACKAGE_ROOT_DIR)
+install-python%:
+	python$* setup.py install --root=$(CURDIR)/debian/tmp --install-layout=deb
 
-## immediately useable documentation and exemplar scripts/data
-override_dh_compress:
-	dh_compress -X.py -X.html -X.pdf -X.css -X.jpg -X.txt -X.js -X.json -X.rtc
+# This was the suggested method that does not seem to work:
+# override_dh_auto_install: $(PYTHON3:%=install-python%)
+# 	dh_auto_install
+
+# This works better:
+override_dh_auto_install: $(PYTHON3_VERSIONS:%=install-python%)
+	dh_auto_install
+
+# override_dh_installchangelogs:
+# 	dh_installchangelogs -k foo/NEWS.rst
 
 override_dh_installdocs:
-	dh_installdocs -A CONTRIBUTORS.txt README.md DEVELOPMENT.txt TASKS.txt
+	cd doc; make clean; make html; cd ..
+	dh_installdocs doc/build/html
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf build
+	rm -rf *.egg-info

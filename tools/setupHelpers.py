@@ -121,7 +121,7 @@ from generateChangelog import generateDebianChangelog
 class DebCommand(Command):
     description = "build .deb package using `debuild -us -uc`"
     maintainer = "Luke Campagnola <luke.campagnola@gmail.com>"
-    debTemplate = "tools/debian"
+    debTemplate = "debian"
     debDir = "deb_build"
     
     user_options = []

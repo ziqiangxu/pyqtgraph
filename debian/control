@@ -1,30 +1,16 @@
 Source: python-pyqtgraph
+Maintainer: Luke Campagnola <luke.campagnola@gmail.com>
 Section: python
 Priority: optional
-Maintainer: Luke Campagnola <luke.campagnola@gmail.com>
-Uploaders: Yaroslav Halchenko <debian@onerussian.com>
 Standards-Version: 3.9.4
-Build-Depends: debhelper (>= 7.0.50),
-               python-all (>= 2.6.6-3~),
-               python3-all,
-               python-setuptools,
-               python-numpy,
-               python-scipy,
-               python-qt4,
-               python-qt4-gl,
-               python-sphinx (>= 1.0.7+dfsg),
+Build-Depends: debhelper (>= 8), dh-python, python-all (>= 2.6.6-3~), python-setuptools, python3-all, python3-setuptools, python-docutils, python-sphinx (>= 1.0.7+dfsg-1~)
 X-Python-Version: >= 2.6
 X-Python3-Version: >= 3.2
-Homepage: http://www.pyqtgraph.org
-Vcs-Browser: https://github.com/pyqtgraph/pyqtgraph.git
-Vcs-Git: git://github.com/pyqtgraph/pyqtgraph
-
 
 Package: python-pyqtgraph
 Architecture: all
-Depends: python-qt4 | python-pyside, 
-         python-scipy, python-numpy, 
-         ${python:Depends}, ${misc:Depends}
+Homepage: http://www.pyqtgraph.org
+Depends: python-qt4 | python-pyside, python-scipy, python-numpy, ${python:Depends}, ${misc:Depends}
 Suggests: python-pyqtgraph-doc, python-opengl, python-qt4-gl
 Description: Scientific Graphics and GUI Library (Python 2)
  PyQtGraph is a pure-python graphics and GUI library built on PyQt4 and numpy. 
@@ -35,13 +21,11 @@ Description: Scientific Graphics and GUI Library (Python 2)
  .
  This is the Python 2 version of the package.
 
-
 Package: python3-pyqtgraph
 Architecture: all
-Depends: python3-qt4 | python3-pyside, 
-         python3-scipy, python3-numpy, 
-         ${python3:Depends}, ${misc:Depends}
-Suggests: python-pyqtgraph-doc, python3-opengl, python3-qt4-gl
+Homepage: http://www.pyqtgraph.org
+Depends: python-qt4 | python-pyside, python-scipy, python-numpy, ${python3:Depends}, ${misc:Depends}
+Suggests: python-pyqtgraph-doc, python-opengl, python-qt4-gl
 Description: Scientific Graphics and GUI Library (Python 3)
  PyQtGraph is a pure-python graphics and GUI library built on PyQt4 and numpy. 
  It is intended for use in mathematics / scientific / engineering applications. 
@@ -51,11 +35,10 @@ Description: Scientific Graphics and GUI Library (Python 3)
  .
  This is the Python 3 version of the package.
 
-
 Package: python-pyqtgraph-doc
 Architecture: all
 Section: doc
-Depends: ${misc:Depends}, ${sphinxdoc:Depends}
+Depends: ${sphinxdoc:Depends}, ${misc:Depends}
 Description: Scientific Graphics and GUI Library (common documentation)
  PyQtGraph is a pure-python graphics and GUI library built on PyQt4 and numpy. 
  It is intended for use in mathematics / scientific / engineering applications. 

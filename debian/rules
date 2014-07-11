@@ -1,49 +1,21 @@
 #!/usr/bin/make -f
-#DH_VERBOSE=1
-
-PYTHON2_VERSIONS=$(shell pyversions -vr)
-PYTHON3_VERSIONS=$(shell py3versions -vr)
-PYTHON_VERSIONS=${PYTHON2_VERSIONS} ${PYTHON3_VERSIONS}
-
-# Prevent setuptools/distribute from accessing the internet.
-export http_proxy = http://127.0.0.1:9
+#export DH_VERBOSE=1
+export PYBUILD_NAME=pyqtgraph
+export PYBUILD_TEST_PYTEST=1
 
 %:
-	dh $@ --with python2,python3,sphinxdoc
+	dh $@ --with python2,python3,sphinxdoc --buildsystem=pybuild
 
-# # Testing:
-# ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
-# test-python%:
-# 	python$* setup.py test -vv
-# 
-# override_dh_auto_test: $(foreach pyversion,${PYTHON_VERSIONS},$(pyversion:%=test-python%))
-# endif
+#override_dh_installdocs:
+#	PYTHONPATH=`pwd` make -C doc html
+#	dh_installdocs -ppython-pyqtgraph-doc doc/build/html
+#	dh_installdocs -A
 
-build-python%:
-	python$* setup.py build
+#override_dh_clean:
+#	dh_clean
+#	find ./ -name "*.pyc" -delete
 
-override_dh_auto_build: $(PYTHON3:%=build-python%)
+override_dh_auto_build:
 	dh_auto_build
-
-install-python%:
-	python$* setup.py install --root=$(CURDIR)/debian/tmp --install-layout=deb
-
-# This was the suggested method that does not seem to work:
-# override_dh_auto_install: $(PYTHON3:%=install-python%)
-# 	dh_auto_install
-
-# This works better:
-override_dh_auto_install: $(PYTHON3_VERSIONS:%=install-python%)
-	dh_auto_install
-
-# override_dh_installchangelogs:
-# 	dh_installchangelogs -k foo/NEWS.rst
-
-override_dh_installdocs:
-	cd doc; make clean; make html; cd ..
-	dh_installdocs doc/build/html
-
-override_dh_auto_clean:
-	dh_auto_clean
-	rm -rf build
-	rm -rf *.egg-info
+	PYTHONPATH=. http_proxy='127.0.0.1:9' sphinx-build -N -bhtml doc/source build/html # HTML generator
+	#PYTHONPATH=. http_proxy='127.0.0.1:9' sphinx-build -N -bman docs/ build/man # Manpage generator

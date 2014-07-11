@@ -12,7 +12,7 @@ There are a few suggested ways to use pyqtgraph:
 Command-line use
 ----------------
 
-Pyqtgraph makes it very easy to visualize data from the command line. Observe::
+PyQtGraph makes it very easy to visualize data from the command line. Observe::
     
     import pyqtgraph as pg
     pg.plot(data)   # data can be a list of values or a numpy array
@@ -43,7 +43,7 @@ While I consider this approach somewhat lazy, it is often the case that 'lazy' i
 Embedding widgets inside PyQt applications
 ------------------------------------------
 
-For the serious application developer, all of the functionality in pyqtgraph is available via :ref:`widgets <api_widgets>` that can be embedded just like any other Qt widgets. Most importantly, see: :class:`PlotWidget <pyqtgraph.PlotWidget>`, :class:`ImageView <pyqtgraph.ImageView>`, :class:`GraphicsLayoutWidget <pyqtgraph.GraphicsLayoutWidget>`, and :class:`GraphicsView <pyqtgraph.GraphicsView>`. Pyqtgraph's widgets can be included in Designer's ui files via the "Promote To..." functionality:
+For the serious application developer, all of the functionality in pyqtgraph is available via :ref:`widgets <api_widgets>` that can be embedded just like any other Qt widgets. Most importantly, see: :class:`PlotWidget <pyqtgraph.PlotWidget>`, :class:`ImageView <pyqtgraph.ImageView>`, :class:`GraphicsLayoutWidget <pyqtgraph.GraphicsLayoutWidget>`, and :class:`GraphicsView <pyqtgraph.GraphicsView>`. PyQtGraph's widgets can be included in Designer's ui files via the "Promote To..." functionality:
     
 #. In Designer, create a QGraphicsView widget ("Graphics View" under the "Display Widgets" category).
 #. Right-click on the QGraphicsView and select "Promote To...".
@@ -94,7 +94,7 @@ The basic approach is to clone the repository into the appropriate location in y
 
 To embed a specific version of pyqtgraph, we would clone the pyqtgraph-core repository inside the project::
     
-    my_project$ git clone github.com/pyqtgraph/pyqtgraph-core.git
+    my_project$ git clone https://github.com/pyqtgraph/pyqtgraph-core.git
 
 Then adjust the import statements accordingly::
 
@@ -115,9 +115,9 @@ For projects that already use git for code control, it is also possible to inclu
     
     my_project$ git remote add pyqtgraph-core https://github.com/pyqtgraph/pyqtgraph-core.git
     my_project$ git fetch pyqtgraph-core
-    my_project$ git merge -s ours --no-commit pyqtgraph-core/develop
+    my_project$ git merge -s ours --no-commit pyqtgraph-core/core
     my_project$ mkdir pyqtgraph
-    my_project$ git read-tree -u --prefix=pyqtgraph/ pyqtgraph-core/develop
+    my_project$ git read-tree -u --prefix=pyqtgraph/ pyqtgraph-core/core
     my_project$ git commit -m "Added pyqtgraph to project repository"
     
 See the ``git subtree`` documentation for more information.

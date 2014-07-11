@@ -10,7 +10,7 @@ Copyright 2012 Luke Campagnola, University of North Carolina at Chapel Hill
 Maintainer
 ----------
 
-  * Luke Campagnola   ('luke.campagnola@%s.com' % 'gmail')
+  * Luke Campagnola   <luke.campagnola@gmail.com>
 
 Contributors
 ------------
@@ -25,14 +25,19 @@ Contributors
   * Guillaume Poulin
   * Antony Lee
   * Mattias Põldaru
+  * Thomas S.
+  * Fabio Zadrozny
+  * Mikhail Terekhov
+  * Pietro Zambelli
+  * Stefan Holzmann
 
 Requirements
 ------------
 
   * PyQt 4.7+ or PySide
   * python 2.6, 2.7, or 3.x
-  * numpy, scipy
-  * For 3D graphics: pyopengl
+  * NumPy 
+  * For 3D graphics: pyopengl and qt-opengl
   * Known to run on Windows, Linux, and Mac.
 
 Support
@@ -48,7 +53,10 @@ Installation Methods
       used as a git subtree by cloning the git-core repository from github.
   * To install system-wide from source distribution:
         `$ python setup.py install`
-  * For instalation packages, see the website (pyqtgraph.org)
+  * For installation packages, see the website (pyqtgraph.org)
+  * On debian-like systems, pyqtgraph requires the following packages:
+        python-numpy, python-qt4 | python-pyside
+        For 3D support: python-opengl, python-qt4-gl | python-pyside.qtopengl
 
 Documentation
 -------------

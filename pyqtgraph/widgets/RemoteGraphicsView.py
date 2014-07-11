@@ -3,6 +3,7 @@ if not USE_PYSIDE:
     import sip
 from .. import multiprocess as mp
 from .GraphicsView import GraphicsView
+from .. import CONFIG_OPTIONS
 import numpy as np
 import mmap, tempfile, ctypes, atexit, sys, random
 
@@ -35,7 +36,7 @@ class RemoteGraphicsView(QtGui.QWidget):
 
         self._proc = mp.QtProcess(**kwds)
         self.pg = self._proc._import('pyqtgraph')
-        self.pg.setConfigOptions(**self.pg.CONFIG_OPTIONS)
+        self.pg.setConfigOptions(**CONFIG_OPTIONS)
         rpgRemote = self._proc._import('pyqtgraph.widgets.RemoteGraphicsView')
         self._view = rpgRemote.Renderer(*args, **remoteKwds)
         self._view._setProxyOptions(deferGetattr=True)
@@ -107,7 +108,7 @@ class RemoteGraphicsView(QtGui.QWidget):
         return QtGui.QWidget.mouseMoveEvent(self, ev)
         
     def wheelEvent(self, ev):
-        self._view.wheelEvent(ev.pos(), ev.globalPos(), ev.delta(), int(ev.buttons()), int(ev.modifiers()), ev.orientation(), _callSync='off')
+        self._view.wheelEvent(ev.pos(), ev.globalPos(), ev.delta(), int(ev.buttons()), int(ev.modifiers()), int(ev.orientation()), _callSync='off')
         ev.accept()
         return QtGui.QWidget.wheelEvent(self, ev)
     
@@ -242,6 +243,7 @@ class Renderer(GraphicsView):
     def wheelEvent(self, pos, gpos, d, btns, mods, ori):
         btns = QtCore.Qt.MouseButtons(btns)
         mods = QtCore.Qt.KeyboardModifiers(mods)
+        ori = (None, QtCore.Qt.Horizontal, QtCore.Qt.Vertical)[ori]
         return GraphicsView.wheelEvent(self, QtGui.QWheelEvent(pos, gpos, d, btns, mods, ori))
 
     def keyEvent(self, typ, mods, text, autorep, count):

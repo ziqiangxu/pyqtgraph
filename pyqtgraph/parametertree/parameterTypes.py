@@ -18,16 +18,16 @@ class WidgetParameterItem(ParameterItem):
     * simple widget for editing value (displayed instead of label when item is selected)
     * button that resets value to default
     
-    ================= =============================================================
-    Registered Types:
-    int               Displays a :class:`SpinBox <pyqtgraph.SpinBox>` in integer
-                      mode.
-    float             Displays a :class:`SpinBox <pyqtgraph.SpinBox>`.
-    bool              Displays a QCheckBox
-    str               Displays a QLineEdit
-    color             Displays a :class:`ColorButton <pyqtgraph.ColorButton>`
-    colormap          Displays a :class:`GradientWidget <pyqtgraph.GradientWidget>`
-    ================= =============================================================
+    ==========================  =============================================================
+    **Registered Types:**
+    int                         Displays a :class:`SpinBox <pyqtgraph.SpinBox>` in integer
+                                mode.
+    float                       Displays a :class:`SpinBox <pyqtgraph.SpinBox>`.
+    bool                        Displays a QCheckBox
+    str                         Displays a QLineEdit
+    color                       Displays a :class:`ColorButton <pyqtgraph.ColorButton>`
+    colormap                    Displays a :class:`GradientWidget <pyqtgraph.GradientWidget>`
+    ==========================  =============================================================
     
     This class can be subclassed by overriding makeWidget() to provide a custom widget.
     """
@@ -125,6 +125,7 @@ class WidgetParameterItem(ParameterItem):
             w.sigChanged = w.toggled
             w.value = w.isChecked
             w.setValue = w.setChecked
+            w.setEnabled(not opts.get('readonly', False))
             self.hideWidget = False
         elif t == 'str':
             w = QtGui.QLineEdit()
@@ -140,6 +141,7 @@ class WidgetParameterItem(ParameterItem):
             w.setValue = w.setColor
             self.hideWidget = False
             w.setFlat(True)
+            w.setEnabled(not opts.get('readonly', False))            
         elif t == 'colormap':
             from ..widgets.GradientWidget import GradientWidget ## need this here to avoid import loop
             w = GradientWidget(orientation='bottom')
@@ -208,12 +210,14 @@ class WidgetParameterItem(ParameterItem):
         val = self.widget.value()
         newVal = self.param.setValue(val)
 
-    def widgetValueChanging(self):
+    def widgetValueChanging(self, *args):
         """
         Called when the widget's value is changing, but not finalized.
         For example: editing text before pressing enter or changing focus.
         """
-        pass
+        # This is a bit sketchy: assume the last argument of each signal is
+        # the value..
+        self.param.sigValueChanging.emit(self.param, args[-1])
         
     def selected(self, sel):
         """Called when this item has been selected (sel=True) OR deselected (sel=False)"""
@@ -272,6 +276,8 @@ class WidgetParameterItem(ParameterItem):
         
         if 'readonly' in opts:
             self.updateDefaultBtn()
+            if isinstance(self.widget, (QtGui.QCheckBox,ColorButton)):
+                w.setEnabled(not opts['readonly'])
         
         ## If widget is a SpinBox, pass options straight through
         if isinstance(self.widget, SpinBox):
@@ -279,6 +285,9 @@ class WidgetParameterItem(ParameterItem):
                 opts['suffix'] = opts['units']
             self.widget.setOpts(**opts)
             self.updateDisplayLabel()
+        
+        
+        
             
 class EventProxy(QtCore.QObject):
     def __init__(self, qobj, callback):
@@ -530,8 +539,8 @@ class ListParameter(Parameter):
         self.forward, self.reverse = self.mapping(limits)
         
         Parameter.setLimits(self, limits)
-        #print self.name(), self.value(), limits
-        if len(self.reverse) > 0 and self.value() not in self.reverse[0]:
+        #print self.name(), self.value(), limits, self.reverse
+        if len(self.reverse[0]) > 0 and self.value() not in self.reverse[0]:
             self.setValue(self.reverse[0][0])
             
     #def addItem(self, name, value=None):
@@ -634,6 +643,7 @@ class TextParameterItem(WidgetParameterItem):
     def makeWidget(self):
         self.textBox = QtGui.QTextEdit()
         self.textBox.setMaximumHeight(100)
+        self.textBox.setReadOnly(self.param.opts.get('readonly', False))
         self.textBox.value = lambda: str(self.textBox.toPlainText())
         self.textBox.setValue = self.textBox.setPlainText
         self.textBox.sigChanged = self.textBox.textChanged

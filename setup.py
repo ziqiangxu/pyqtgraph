@@ -37,6 +37,11 @@ setupOpts = dict(
 from distutils.core import setup
 import distutils.dir_util
 import os, sys, re
+try:
+    # just avoids warning about install_requires
+    import setuptools
+except ImportError:
+    pass
 
 path = os.path.split(__file__)[0]
 sys.path.insert(0, os.path.join(path, 'tools'))
@@ -88,17 +93,35 @@ class Build(distutils.command.build.build):
             sys.excepthook(*sys.exc_info())
         return ret
         
+import distutils.command.install
 
+class Install(distutils.command.install.install):
+    """
+    * Check for previously-installed version before installing
+    """
+    def run(self):
+        name = self.config_vars['dist_name']
+        if name in os.listdir(self.install_libbase):
+            raise Exception("It appears another version of %s is already "
+                            "installed at %s; remove this before installing." 
+                            % (name, self.install_libbase))
+        print("Installing to %s" % self.install_libbase)
+        return distutils.command.install.install.run(self)
         
 setup(
     version=version,
-    cmdclass={'build': Build, 'deb': helpers.DebCommand, 'test': helpers.TestCommand},
+    cmdclass={'build': Build, 
+              'install': Install,
+              'deb': helpers.DebCommand, 
+              'test': helpers.TestCommand,
+              'debug': helpers.DebugCommand,
+              'mergetest': helpers.MergeTestCommand,
+              'style': helpers.StyleCommand},
     packages=allPackages,
     package_dir={'pyqtgraph.examples': 'examples'},  ## install examples along with the rest of the source
     #package_data={'pyqtgraph': ['graphicsItems/PlotItem/*.png']},
     install_requires = [
         'numpy',
-        'scipy',
         ],
     **setupOpts
 )
